@@ -1,3 +1,4 @@
+using BookBlish.Enums;
 using BookBlish.Models;
 
 namespace BookBlish.Repositories;
@@ -10,9 +11,9 @@ public interface IBookRepository
 
     Task<BookModel> GetByIdAsync(int id);
 
-    Task<List<BookModel>> GetByGenreAsync(string genre);
+    Task<List<BookModel>> GetByGenreAsync(BookGenre genre);
 
-    Task UpdateAsync(int id, BookModel book); 
+    Task<bool> UpdateAsync(int id, BookModel book); 
 
-    Task DeleteAsync(int id); 
+    Task<bool> DeleteAsync(int id); 
 }

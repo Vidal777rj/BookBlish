@@ -1,5 +1,7 @@
 using BookBlish.Database;
+using BookBlish.Enums;
 using BookBlish.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookBlish.Repositories;
 
@@ -15,32 +17,80 @@ public class BookRepository : IBookRepository
     {
         if (book is null)
             throw new ArgumentNullException(nameof(book));
-        await _context.Books.AddAsync(book);
+        await _context.Books.AddAsync(book);;
         await _context.SaveChangesAsync();
     }
 
-    public Task<List<BookModel>> GetAllAsync()
+    public async Task<List<BookModel>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _context.Books.AsNoTracking().ToListAsync();
+    }
+        catch(Exception ex)
+        {
+            throw new ApplicationException($"Erro ao buscar os todos os livros : {ex}");
+        }
     }
 
-    public Task<BookModel> GetByIdAsync(int id)
+    public async Task<BookModel> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _context.Books.FirstOrDefaultAsync(b => b.Id == id);
+        }catch(Exception ex)
+        {
+            throw new Exception($"Erro ao buscar livro pelo ID : {ex}");
+        }
     }
 
-    public Task<List<BookModel>> GetByGenreAsync(string genre)
+    public async Task<List<BookModel>> GetByGenreAsync(BookGenre genre)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _context.Books.AsNoTracking().Where(b => b.Genre == genre).ToListAsync();
+        }
+        catch(Exception ex)
+        {
+            throw new Exception($"Erro ao buscar livros pelo genero : {ex}");
+        }
     }
 
-    public Task UpdateAsync(int id, BookModel book)
+    public async Task<bool> UpdateAsync(int id, BookModel book)
     {
-        throw new NotImplementedException();
+    try
+    {
+            var existingBook = await _context.Books.FindAsync(book.Id);
+            if (existingBook == null)
+                return false;
+
+            existingBook.Title = book.Title;
+            existingBook.Author = book.Author;
+            existingBook.PublicationDate = book.PublicationDate;
+            existingBook.Genre = book.Genre;
+            existingBook.CoverImage = book.CoverImage;
+
+            await _context.SaveChangesAsync();
+            return true;
+    }catch(Exception ex)
+    {
+            throw new Exception($"Erro ao modificar livro : {ex}");
+    }
     }
 
-    public Task DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+      try
+        {
+            var book = await _context.Books.FindAsync(id);
+            if (book == null) return false; 
+
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
+            return true; 
+        }catch(Exception ex)
+    {
+            throw new Exception($"Erro ao deletar livro : {ex}");
+    }
     }
 }
