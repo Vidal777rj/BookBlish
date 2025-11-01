@@ -15,9 +15,9 @@ public class BookService : IBookService
         await _bookRepository.AddAsync(book);
     }
 
-    public Task<List<BookModel>> GetAllBooks()
+    public async Task<List<BookModel>> GetAllBooks()
     {
-        throw new NotImplementedException();
+        return await _bookRepository.GetAllAsync();
     }
 
     public Task<BookModel> GetBookById(int id)

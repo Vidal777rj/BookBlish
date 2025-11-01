@@ -12,7 +12,7 @@ public class BookController : ControllerBase
     {
         _bookService = bookService;
     }
-    
+
     [HttpPost, Route("createbook")]
     public async Task<IActionResult> CreateBook([FromBody] BookModel book)
     {
@@ -25,5 +25,16 @@ public class BookController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
+    }
+
+
+    [HttpGet, Route("getallbook")]
+     public async Task<ActionResult<List<BookModel>>> GetAllBooks()
+    {
+        var books = await _bookService.GetAllBooks(); // Chama o método do serviço
+        if (books == null || !books.Any())
+            return NotFound("Nenhum livro encontrado.");
+
+        return Ok(books);
     }
 }
